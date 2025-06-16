@@ -34,7 +34,7 @@ Objetivo:  Gestionar el ingreso y salida en un estacionamiento
 """
 
 # VARIABLES DE MIERDA
-inicio_horario_atencion = datetime.time(0, 4)  # 6:00
+inicio_horario_atencion = datetime.time(6, 30)  # 6:00
 fin_horario_atencion = datetime.time(21, 0)  # 21:00
 espacios_disponibles = 20
 espacios_usados = 0
@@ -311,32 +311,28 @@ while True:
                 console = Console()
                 console.print(table)
         case 5:
-            # may the horrors begin, gott hilf mir
+            # que empiezen los horrores, gott hilf mir
             cleanup()
-            print("[bright_yellow][REPORTE DE VEHÍCULOS ESTACIONADOS][/bright_yellow]")
+            print("[bright_yellow][REPORTE DE FECHA ESPECIFICA][/bright_yellow]")
             print("[bright_yellow]----[/bright_yellow]" * 15)
             while True:
                     fecha_input = input("Ingrese la fecha (YYYY-MM-DD): ").strip()
                     try:
                         fecha_consulta = datetime.datetime.strptime(fecha_input, "%Y-%m-%d").date()
 
-                        # Reset variables for this report
                         vehiculos_en_fecha = []
                         total_recaudado = 0
 
-                        # Find vehicles that were checked out on the requested date
                         for auto in autos_alltime:
                             if "horario_salida" in auto:
                                 salida_date = datetime.datetime.fromisoformat(auto["horario_salida"]).date()
                                 if salida_date == fecha_consulta:
                                     vehiculos_en_fecha.append(auto)
-                                    # Add this vehicle's payment to the total
                                     total_recaudado += auto.get("monto_pagado", 0)
 
                         if not vehiculos_en_fecha:
                             print(f"No hay vehículos retirados en la fecha {fecha_input}.")
                         else:
-                            # Create one table for all vehicles
                             table = Table(title=f"Vehículos retirados el {fecha_input}", show_lines=True)
                             table.add_column("N° Serie")
                             table.add_column("Patente")
@@ -364,8 +360,69 @@ while True:
                         break
                     except ValueError:
                         print("Fecha inválida. Por favor, ingrese una fecha en formato YYYY-MM-DD.")
+        case 6:
+            # you missed that one, try another! you missed that one, try another! you missed that one, try another! you missed that one, try another! great work, try another! you missed that one, try another!
+            # BTW IF YOU CANT TELL, IM GOING INSANE
+            # TRANS PUPPYGIRLS WERENT MADE FOR THIS
+            #
+            # ...MAYBE THEY WERE.
+            # BUT NOT THIS ONE
+            #
+            # BACK WITH ANOTHER MILKSH- HEEEEELP
+            #
+            # HEEEEEEELP
+            #
+            # HELP MEEEE
+            # HEEEEELP
+            cleanup()
+            print("[bright_yellow][REPORTE DE RANGO DE FECHA][/bright_yellow]")
+            print("[bright_yellow]----[/bright_yellow]" * 15)
+            while True:
+                    fecha_inicio_input = input("Ingrese la primera fecha (YYYY-MM-DD): ").strip()
+                    fecha_fin_input = input("Ingrese la segunda fecha (YYYY-MM-DD): ").strip()
+                    try:
+                        fecha_inicio = datetime.datetime.strptime(fecha_inicio_input, "%Y-%m-%d").date()
+                        fecha_fin = datetime.datetime.strptime(fecha_fin_input, "%Y-%m-%d").date()
 
+                        vehiculos_en_fecha = []
+                        total_recaudado = 0
 
+                        for auto in autos_alltime:
+                            if "horario_salida" in auto:
+                                horario_salida_convertido = datetime.datetime.fromisoformat(auto["horario_salida"]).date()
+                                if fecha_inicio <= horario_salida_convertido <= fecha_fin:
+                                    vehiculos_en_fecha.append(auto)
+                                    total_recaudado += auto.get("monto_pagado", 0)
+
+                        if not vehiculos_en_fecha:
+                            print(f"No hay vehículos retirados entre las fechas {fecha_inicio_input} y {fecha_fin_input}.")
+                        else:
+                            table = Table(title=f"Vehículos retirados desde el {fecha_inicio_input} hasta el {fecha_fin_input}", show_lines=True)
+                            table.add_column("N° Serie")
+                            table.add_column("Patente")
+                            table.add_column("Horario Entrada")
+                            table.add_column("Horario Salida")
+                            table.add_column("Monto Pagado")
+
+                            for auto in vehiculos_en_fecha:
+                                entrada = datetime.datetime.fromisoformat(auto["horario_entrada"]).strftime("%Y-%m-%d %H:%M:%S")
+                                salida = datetime.datetime.fromisoformat(auto["horario_salida"]).strftime("%Y-%m-%d %H:%M:%S")
+
+                                table.add_row(
+                                    auto["n_serie"],
+                                    auto["patente"],
+                                    entrada,
+                                    salida,
+                                    f"${auto.get('monto_pagado', 0)}"
+                                )
+
+                            console = Console()
+                            console.print(table)
+                            print(f"\n[bright_green]Total recaudado: ${total_recaudado}[/bright_green]")
+                            break
+                    except ValueError:
+                        print("Fecha inválida. Por favor, ingrese las fechas en formato YYYY-MM-DD.")
+                        continue
         case 6:
             cleanup()
             break
